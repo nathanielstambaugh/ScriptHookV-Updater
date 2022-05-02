@@ -33,8 +33,6 @@ desktop_d = r"C:\Users\nstam\Desktop\bin\dinput8.dll"
 desktop_n = r"C:\Users\nstam\Desktop\bin\NativeTrainer.asi"
 desktop_s = r"C:\Users\nstam\Desktop\bin\ScriptHookV.dll"
 
-
-
 def getwebver():
     page = requests.get('http://www.dev-c.com/GTAV/scripthookv')
     soup = BeautifulSoup(page.text, "html.parser")
@@ -43,13 +41,11 @@ def getwebver():
     finalversion = version.translate({ord("v"): None})
     return finalversion
 
-
 def getlocalver(filename):
         info = GetFileVersionInfo(filename, "\\")
         ms = info['FileVersionMS']
         ls = info['FileVersionLS']
         return HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls)
-
 
 def versiontuple(v):
     return tuple(map(int, (v.split("."))))
@@ -61,7 +57,7 @@ def download():
     url = "http://www.dev-c.com/GTAV/scripthookv"
     options = Options()
     options.add_argument("--window-size=1920,1080")
-    options.add_argument("--headless")
+    #options.add_argument("--headless")  <---- Doesn't appear to download the file while in this mode
     driver = webdriver.Edge(options=options)
     try:
         driver.get(url)
