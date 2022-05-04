@@ -23,15 +23,16 @@ zip_d = "bin/dinput8.dll"
 zip_n = "bin/NativeTrainer.asi"
 zip_s = "bin/ScriptHookV.dll"
 desktop = r"C:\Users\nstam\Desktop"
-#desktop = r"C:\Users\Admin\Desktop"
-#gamedir = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V"
+# desktop = r"C:\Users\Admin\Desktop"
+# gamedir = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V"
 gamedir = r"C:\test"
-#desktop_d = r"C:\Users\Admin\Desktop\bin\dinput8.dll"
-#desktop_n = r"C:\Users\Admin\Desktop\bin\NativeTrainer.asi"
-#desktop_s = r"C:\Users\Admin\Desktop\bin\ScriptHookV.dll"
+# desktop_d = r"C:\Users\Admin\Desktop\bin\dinput8.dll"
+# desktop_n = r"C:\Users\Admin\Desktop\bin\NativeTrainer.asi"
+# desktop_s = r"C:\Users\Admin\Desktop\bin\ScriptHookV.dll"
 desktop_d = r"C:\Users\nstam\Desktop\bin\dinput8.dll"
 desktop_n = r"C:\Users\nstam\Desktop\bin\NativeTrainer.asi"
 desktop_s = r"C:\Users\nstam\Desktop\bin\ScriptHookV.dll"
+
 
 def getwebver():
     page = requests.get('http://www.dev-c.com/GTAV/scripthookv')
@@ -41,23 +42,27 @@ def getwebver():
     finalversion = version.translate({ord("v"): None})
     return finalversion
 
+
 def getlocalver(filename):
         info = GetFileVersionInfo(filename, "\\")
         ms = info['FileVersionMS']
         ls = info['FileVersionLS']
         return HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls)
 
+
 def versiontuple(v):
     return tuple(map(int, (v.split("."))))
 
-def mbox(text,title,style):
-    return ctypes.windll.user32.MessageBoxW(0,text,title,style)
+
+def mbox(text, title, style):
+    return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+
 
 def download():
     url = "http://www.dev-c.com/GTAV/scripthookv"
     options = Options()
     options.add_argument("--window-size=1920,1080")
-    #options.add_argument("--headless")  <---- Doesn't appear to download the file while in this mode
+    # options.add_argument("--headless")  <---- Doesn't appear to download the file while in this mode
     driver = webdriver.Edge(options=options)
     try:
         driver.get(url)
@@ -69,6 +74,7 @@ def download():
     except:
         print("Element wasn't clicked\n")
         exit()
+
 
 def extractzip(filename):
     try:
@@ -83,45 +89,39 @@ def extractzip(filename):
             os.remove(steam_s)
         if os.path.exists(steam_n):
             os.remove(steam_n)
-        shutil.move(desktop_d, gamedir,)
+        shutil.move(desktop_d, gamedir)
         shutil.move(desktop_n, gamedir)
         shutil.move(desktop_s, gamedir)
         shutil.rmtree(r"C:\Users\nstam\Desktop\bin")
-        #shutil.rmtree(r"C:\Users\Admin\Desktop\bin")
+        # shutil.rmtree(r"C:\Users\Admin\Desktop\bin")
         print("files have been moved!\n")
     except Exception:
         print("Couldn't find " + filename)
         exit()
 
-
-
 webver = getwebver()
 shzip = r"C:\Users\nstam\Downloads\ScriptHookV_" + webver + ".zip"
-#shzip = r"C:\Users\Admin\Downloads\ScriptHookV_" + webver + ".zip"
+# shzip = r"C:\Users\Admin\Downloads\ScriptHookV_" + webver + ".zip"
 
 try:
-    localver = ".".join(
-    [str(i) for i in getlocalver(steam_s)])
+    localver = ".".join([str(i) for i in getlocalver(steam_s)])
 except:
-     print("Couldn't locate the scripthook dll file. Getting ready to download it...\n")
-     download()
-     extractzip(shzip)
-     mbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater", 0)
-     os.remove(shzip)
-     exit()
+    print("Couldn't locate the scripthook dll file. Getting ready to download it...\n")
+    download()
+    extractzip(shzip)
+    mbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater", 0)
+    os.remove(shzip)
+    exit()
 
 version = versiontuple(webver) > versiontuple(localver)
 
 if version == True:
     decision = mbox("Update available! Would you like to update?", "Script Hook Updater", 4)
+    if decision == 6:
+        download()
+        extractzip(shzip)
+        mbox("ScriptHookV has been updated successfully!", "Script Hook Updater", 0)
+        os.remove(shzip)
 else:
     mbox("No updates at this time", "Script Hook Updater", 0)
-    exit()
-
-if decision == 6:
-    download()
-    extractzip(shzip)
-    mbox("ScriptHookV has been updated successfully!", "Script Hook Updater", 0)
-    os.remove(shzip)
-else:
     exit()
