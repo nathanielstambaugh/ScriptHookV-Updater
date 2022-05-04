@@ -36,7 +36,7 @@ def getlocalver(filename):
         info = GetFileVersionInfo(filename, "\\")
         ms = info['FileVersionMS']
         ls = info['FileVersionLS']
-        return HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls)
+        return str(HIWORD(ms)) + "." + str(LOWORD(ms)) + "." + str(HIWORD(ls)) + "." + str(LOWORD(ls))
 
 # This function will store the version number in a tuple using a '.' as a delimiter. This allows for easy comparison.
 def versiontuple(v):
@@ -81,13 +81,10 @@ def extractzip(filename):
         exit()
 
 
-shzip = r"C:\Users\nstam\Downloads\ScriptHookV_" + getwebver() + ".zip"
-# shzip = r"C:\Users\Admin\Downloads\ScriptHookV_" + getwebver() + ".zip"
-
-
 try:
-    localver = ".".join([str(i) for i in getlocalver(steam_s)])
-    if versiontuple(webver) > versiontuple(localver):
+    shzip = r"C:\Users\nstam\Downloads\ScriptHookV_" + getwebver() + ".zip"
+    # shzip = r"C:\Users\Admin\Downloads\ScriptHookV_" + getwebver() + ".zip"
+    if versiontuple(getwebver()) > versiontuple(getlocalver(steam_s)):
         decision = mbox("Update available! Would you like to update?", "Script Hook Updater", 4)
         if decision == 6:
             download()
