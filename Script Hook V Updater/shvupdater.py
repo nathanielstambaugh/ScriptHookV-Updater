@@ -115,7 +115,7 @@ except:
 
 version = versiontuple(webver) > versiontuple(localver)
 
-if version == True:
+if version:
     decision = mbox("Update available! Would you like to update?", "Script Hook Updater", 4)
     if decision == 6:
         download()
