@@ -1,7 +1,6 @@
 from requests import get
 from bs4 import BeautifulSoup
 from win32api import GetFileVersionInfo, LOWORD, HIWORD
-from ctypes import windll
 import zipfile
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,9 +8,10 @@ from selenium.webdriver.edge.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from time import sleep
-from os import remove, path
+from os import remove, path, getlogin
 from shutil import rmtree, move
 from socket import gethostname
+import easygui
 
 # String declarations for the various paths based on computer name
 if gethostname() == "STRIX" or gethostname() == "KG348":
@@ -29,31 +29,43 @@ elif gethostname() == "DigitalStorm-PC":
     desktop_s = r"C:\Users\Admin\Desktop\bin\ScriptHookV.dll"
     bin_folder = r"C:\Users\Admin\Desktop\bin"
     downloads = r"C:\Users\Admin\Downloads\ScriptHookV_"
+else:
+    easygui.msgbox("Please choose your installation directory for GTA 5", "Script Hook Updater")
+    gamedir = easygui.diropenbox()
+    uname = getlogin()
+    steam_s = gamedir + "\\" + "ScriptHookV.dll"
+    desktop = "C:\\Users\\" + uname + "\\Desktop"
+    bin_folder = desktop + "\\bin"
+    desktop_s = bin_folder + "ScriptHookV.dll"
+    downloads = "C:\\Users\\" + uname + "\\Downloads\\ScriptHookV_"
+
+# The next function retrieves the most recent version number available from the site hosting it
 
 
-# This function retrieves the most recent version number available from the site hosting it
 def getwebver():
     page = get('http://www.dev-c.com/GTAV/scripthookv')
     soup = BeautifulSoup(page.text, "html.parser")
     anchors = soup.select("table tbody tr td table.tftablew td")
     return anchors[1].text.translate({ord("v"): None})
 
-# This function retrieves the version of the locally installed ScriptHookV.dll file
+# The next function retrieves the version of the locally installed ScriptHookV.dll file
+
+
 def getlocalver(filename):
         info = GetFileVersionInfo(filename, "\\")
         ms = info['FileVersionMS']
         ls = info['FileVersionLS']
         return str(HIWORD(ms)) + "." + str(LOWORD(ms)) + "." + str(HIWORD(ls)) + "." + str(LOWORD(ls))
 
-# This function will store the version number in a tuple using a '.' as a delimiter. This allows for easy comparison.
+# The next function will store the version number in a tuple using a '.' as a delimiter.
+
+
 def versiontuple(v):
     return tuple(map(int, (v.split("."))))
 
-# This function allows access to the windows messagebox to provide feedback to the user
-def mbox(text, title, style):
-    return windll.user32.MessageBoxW(0, text, title, style)
+# The next function will download the zip file from the hosting site
 
-# This function will download the zip file from the hosting site
+
 def download():
     url = "http://www.dev-c.com/GTAV/scripthookv"
     options = Options()
@@ -71,7 +83,9 @@ def download():
         # print("Element wasn't clicked\n")
         exit()
 
-# This function will extract the zip file and takes the full path as an argument
+# The next function will extract the zip file and takes the full path as an argument
+
+
 def extractzip(filename):
     try:
         with zipfile.ZipFile(filename) as zip:
@@ -83,23 +97,23 @@ def extractzip(filename):
         rmtree(bin_folder)
         # print("files have been moved!\n")
     except Exception:
-        mbox("Couldn't find " + filename, "Script Hook Updater", 0)
+        easygui.msgbox("Couldn't find " + filename, "Script Hook Updater", "OK")
         exit()
+
 
 shzip = downloads + getwebver() + ".zip"
 try:
     if versiontuple(getwebver()) > versiontuple(getlocalver(steam_s)):
-        decision = mbox("Update available! Would you like to update?", "Script Hook Updater", 4)
-        if decision == 6:
+        if easygui.ynbox("Update available! Would you like to update?", "Script Hook Updater", ["Yes", "No"]):
             download()
             extractzip(shzip)
-            mbox("ScriptHookV has been updated successfully!", "Script Hook Updater", 0)
+            easygui.msgbox("ScriptHookV has been updated successfully!", "Script Hook Updater")
             remove(shzip)
     else:
-        mbox("No updates at this time", "Script Hook Updater", 0)
+        easygui.msgbox("No updates at this time", "Script Hook Updater", "OK")
 except:
-    mbox("Couldn't locate the scripthook dll file. Getting ready to download it", "Script Hook Updater", 0)
+    easygui.msgbox("Couldn't locate the scripthook dll file. Getting ready to download it", "Script Hook Updater", "OK")
     download()
     extractzip(shzip)
-    mbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater", 0)
+    easygui.msgbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater")
     remove(shzip)
