@@ -58,10 +58,10 @@ def download():
         wait = WebDriverWait(driver, 30)
         wait.until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "Download")))
         driver.find_element(by=By.LINK_TEXT, value="Download").click()
-        print("Element was clicked....\n")
+        # print("Element was clicked....\n")
         time.sleep(10)
     except:
-        print("Element wasn't clicked\n")
+        # print("Element wasn't clicked\n")
         exit()
 
 # This function will extract the zip file and takes the full path as an argument
@@ -75,9 +75,9 @@ def extractzip(filename):
         shutil.move(desktop_s, gamedir)
         shutil.rmtree(r"C:\Users\nstam\Desktop\bin")
         # shutil.rmtree(r"C:\Users\Admin\Desktop\bin")
-        print("files have been moved!\n")
+        # print("files have been moved!\n")
     except Exception:
-        print("Couldn't find " + filename)
+        mbox("Couldn't find " + filename, "Script Hook Updater", 0)
         exit()
 
 
@@ -94,7 +94,7 @@ try:
     else:
         mbox("No updates at this time", "Script Hook Updater", 0)
 except:
-    print("Couldn't locate the scripthook dll file. Getting ready to download it...\n")
+    mbox("Couldn't locate the scripthook dll file. Getting ready to download it", "Script Hook Updater", 0)
     download()
     extractzip(shzip)
     mbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater", 0)
