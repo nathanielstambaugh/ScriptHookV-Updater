@@ -14,7 +14,7 @@ from socket import gethostname
 import easygui
 
 # String declarations for the various paths based on computer name
-if gethostname() == "STRIX" or gethostname() == "KG348":
+if gethostname() == "STRIX" or gethostname() == "KG-348":
     steam_s = r"C:\test\ScriptHookV.dll"
     zip_s = "bin/ScriptHookV.dll"
     desktop = r"C:\Users\nstam\Desktop"
