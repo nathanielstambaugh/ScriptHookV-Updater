@@ -26,7 +26,10 @@ for i in range(1, len(sys.argv)):
         verbose = True
     elif sys.argv[i] == "-h":
         headless = True
-    print("argument: ", i, "value: " + sys.argv[i])
+    else:
+        print("Invalid argument supplied: " + sys.argv[i])
+        print("exiting...")
+        exit()
 
 # String declarations for the various paths based on computer name
 if hostname == "STRIX" or hostname == "KG-348":
@@ -90,10 +93,17 @@ def getlocalver(filename):
 # The map function will convert iterable objects to 'int' type
 
 
-def versiontuple(v):
+def versiontuple(v1, v2):
     if verbose:
-        print("versiontuple() called and was passed " + v)
-    return tuple(map(int, (v.split("."))))
+        print("versiontuple() called and was passed " + v1 + " and " + v2)
+    t1 = tuple(map(int, (v1.split("."))))
+    t2 = tuple(map(int, (v2.split("."))))
+    if verbose:
+        if t1 > t2:
+            print("update is available..asking user")
+        else:
+            print("no update available")
+    return t1 > t2
 
 # Download the file using browser automation libraries
 
@@ -151,7 +161,7 @@ shzip = downloads + webver + ".zip"
 # main execution block that will call all the functions to download and extract the zip file
 
 try:
-    if versiontuple(webver) > versiontuple(localver):
+    if versiontuple(webver, localver):
         if easygui.ynbox("Update available! Would you like to update?", "Script Hook Updater", ["Yes", "No"]):
             if verbose:
                 print("user answered yes")
