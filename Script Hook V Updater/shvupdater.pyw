@@ -19,13 +19,10 @@ hostname = gethostname()
 
 # defining the bool values for command-line arguments
 verbose = False
-headless = False
 
 for i in range(1, len(sys.argv)):
     if sys.argv[i] == "-v":
         verbose = True
-    elif sys.argv[i] == "-h":
-        headless = True
     else:
         print("Invalid argument supplied: " + sys.argv[i])
         print("exiting...")
@@ -43,6 +40,7 @@ if hostname == "STRIX" or hostname == "KG-348":
     desktop_s = r"C:\Users\nstam\Desktop\bin\ScriptHookV.dll"
     bin_folder = r"C:\Users\nstam\Desktop\bin"
     downloads = r"C:\Users\nstam\Downloads\ScriptHookV_"
+    download_dir = r"C:\Users\nstam\Downloads"
 elif hostname == "DigitalStorm-PC":
     if verbose:
         print("got hostname " + hostname + "....executing buzz code block")
@@ -53,6 +51,7 @@ elif hostname == "DigitalStorm-PC":
     desktop_s = r"C:\Users\Admin\Desktop\bin\ScriptHookV.dll"
     bin_folder = r"C:\Users\Admin\Desktop\bin"
     downloads = r"C:\Users\Admin\Downloads\ScriptHookV_"
+    download_dir = r"C:\Users\Admin\Downloads"
 else:
     if verbose:
         print("got hostname " + hostname + "....executing public code block")
@@ -65,6 +64,7 @@ else:
     bin_folder = desktop + "\\bin"
     desktop_s = bin_folder + "ScriptHookV.dll"
     downloads = "C:\\Users\\" + uname + "\\Downloads\\ScriptHookV_"
+    download_dir = "C:\\Users\\" + uname +"\\Downloads"
 
 # The next function retrieves the most recent version number available from the site hosting it
 
@@ -76,6 +76,15 @@ def getwebver():
     if verbose:
         print("got version " + anchors[1].text.translate(({ord("v"): None})) + " using getwebver() function")
     return anchors[1].text.translate({ord("v"): None})
+
+
+# This function will enable downloads in headless mode
+
+
+def enable_download(driver):
+    driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+    params = {'cmd':'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
+    driver.execute("send_command", params)
 
 
 # The next function retrieves the version of the locally installed ScriptHookV.dll file
@@ -112,9 +121,12 @@ def download():
     url = "http://www.dev-c.com/GTAV/scripthookv"
     options = Options()
     options.add_argument("--window-size=1920,1080")
-    if headless:
-        options.add_argument("--headless")
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-popup-blocking")
     driver = webdriver.Edge(options=options)
+    enable_download(driver)
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 30)
@@ -155,12 +167,19 @@ def extractzip(filename):
 
 
 webver = getwebver()
-localver = getlocalver(steam_s)
 shzip = downloads + webver + ".zip"
 
 # main execution block that will call all the functions to download and extract the zip file
 
-try:
+if not path.exists(steam_s):
+    easygui.msgbox("Couldn't locate the scripthook dll file. Getting ready to download it", "Script Hook Updater", "OK")
+    download()
+    extractzip(shzip)
+    easygui.msgbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater")
+    remove(shzip)
+    localver = getlocalver(steam_s)
+else:
+    localver = getlocalver(steam_s)
     if versiontuple(webver, localver):
         if easygui.ynbox("Update available! Would you like to update?", "Script Hook Updater", ["Yes", "No"]):
             if verbose:
@@ -173,11 +192,5 @@ try:
                 print(shzip + " has been removed")
     else:
         easygui.msgbox("No updates at this time", "Script Hook Updater", "OK")
-except:
-    if verbose:
-        print("exception thrown - Probably couldn't find the scripthook dll file")
-    easygui.msgbox("Couldn't locate the scripthook dll file. Getting ready to download it", "Script Hook Updater", "OK")
-    download()
-    extractzip(shzip)
-    easygui.msgbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater")
-    remove(shzip)
+
+
