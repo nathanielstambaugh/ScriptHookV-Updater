@@ -11,28 +11,14 @@ from time import sleep
 from os import remove, path, getlogin
 from shutil import rmtree, move
 from socket import gethostname
-import easygui
-import sys
 
 # get the computer hostname
 hostname = gethostname()
 
-# defining the bool values for command-line arguments
-verbose = False
-
-for i in range(1, len(sys.argv)):
-    if sys.argv[i] == "-v":
-        verbose = True
-    else:
-        print("Invalid argument supplied: " + sys.argv[i])
-        print("exiting...")
-        exit()
-
 # String declarations for the various paths based on computer name
 if hostname == "STRIX" or hostname == "KG-348":
-    if verbose:
-        print("got hostame " + hostname + "....executing testing code block")
-        sleep(3)
+    print("got hostame " + hostname + "....executing testing code block")
+    sleep(2)
     steam_s = r"C:\test\ScriptHookV.dll"
     zip_s = "bin/ScriptHookV.dll"
     desktop = r"C:\Users\nstam\Desktop"
@@ -42,9 +28,8 @@ if hostname == "STRIX" or hostname == "KG-348":
     downloads = r"C:\Users\nstam\Downloads\ScriptHookV_"
     download_dir = r"C:\Users\nstam\Downloads"
 elif hostname == "DigitalStorm-PC":
-    if verbose:
-        print("got hostname " + hostname + "....executing buzz code block")
-        sleep(3)
+    print("got hostname " + hostname + "....executing buzz code block")
+    sleep(2)
     steam_s = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V\ScriptHookV.dll"
     desktop = r"C:\Users\Admin\Desktop"
     gamedir = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V"
@@ -53,11 +38,9 @@ elif hostname == "DigitalStorm-PC":
     downloads = r"C:\Users\Admin\Downloads\ScriptHookV_"
     download_dir = r"C:\Users\Admin\Downloads"
 else:
-    if verbose:
-        print("got hostname " + hostname + "....executing public code block")
-        sleep(3)
-    easygui.msgbox("Please choose your installation directory for GTA 5", "Script Hook Updater")
-    gamedir = easygui.diropenbox()
+    print("got hostname " + hostname + "....executing public code block")
+    sleep(2)
+    gamedir = input("\n\nPlease enter the installation directory for GTA 5: ")
     uname = getlogin()
     steam_s = gamedir + "\\" + "ScriptHookV.dll"
     desktop = "C:\\Users\\" + uname + "\\Desktop"
@@ -73,8 +56,7 @@ def getwebver():
     page = get('http://www.dev-c.com/GTAV/scripthookv')
     soup = BeautifulSoup(page.text, "html.parser")
     anchors = soup.select("table tbody tr td table.tftablew td")
-    if verbose:
-        print("got version " + anchors[1].text.translate(({ord("v"): None})) + " using getwebver() function")
+    print("got version " + anchors[1].text.translate(({ord("v"): None})) + " using getwebver() function")
     return anchors[1].text.translate({ord("v"): None})
 
 
@@ -91,33 +73,28 @@ def enable_download(driver):
 
 
 def getlocalver(filename):
-        if verbose:
-            print("getlocalver() called and was passed " + filename)
-        info = GetFileVersionInfo(filename, "\\")
-        ms = info['FileVersionMS']
-        ls = info['FileVersionLS']
-        return str(HIWORD(ms)) + "." + str(LOWORD(ms)) + "." + str(HIWORD(ls)) + "." + str(LOWORD(ls))
+    print("getlocalver() called and was passed " + filename)
+    info = GetFileVersionInfo(filename, "\\")
+    ms = info['FileVersionMS']
+    ls = info['FileVersionLS']
+    return str(HIWORD(ms)) + "." + str(LOWORD(ms)) + "." + str(HIWORD(ls)) + "." + str(LOWORD(ls))
 
 # The next function will store the version number in a 4-tuple using a '.' as a delimiter.
 # The map function will convert iterable objects to 'int' type
 
 
 def versiontuple(v1, v2):
-    if verbose:
-        print("versiontuple() called and was passed " + v1 + " and " + v2)
+    print("versiontuple() called and was passed " + v1 + " and " + v2)
     t1 = tuple(map(int, (v1.split("."))))
     t2 = tuple(map(int, (v2.split("."))))
-    if verbose:
-        if t1 > t2:
-            print("update is available..asking user")
-        else:
-            print("no update available")
     return t1 > t2
 
 # Download the file using browser automation libraries
 
 
 def download():
+    print("download() called....setting up the edge webdriver")
+    sleep(2)
     url = "http://www.dev-c.com/GTAV/scripthookv"
     options = Options()
     options.add_argument("--window-size=1920,1080")
@@ -127,17 +104,16 @@ def download():
     options.add_argument("--disable-popup-blocking")
     driver = webdriver.Edge(options=options)
     enable_download(driver)
+    print("webdriver setup complete!")
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 30)
         wait.until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "Download")))
         driver.find_element(by=By.LINK_TEXT, value="Download").click()
-        if verbose:
-            print("Element was clicked")
+        print("Element was clicked....waiting for download to complete")
         sleep(10)
     except:
-        if verbose:
-            print("Element wasn't clicked")
+        print("Element wasn't clicked....quitting program")
         exit()
 
 # Extract the zip file and remove any erroneous files afterwards
@@ -145,25 +121,22 @@ def download():
 
 def extractzip(filename):
     try:
-        if verbose:
-            print("extractzip() function called and was passed " + filename)
-            sleep(3)
+        print("extractzip() function called and was passed " + filename)
+        sleep(3)
         with zipfile.ZipFile(filename) as zip:
             zip.extract(zip_s, desktop)
-            if verbose:
-                print(filename + " extracted successfully!")
+            print(filename + " extracted successfully!")
         if path.exists(steam_s):
             remove(steam_s)
         move(desktop_s, gamedir)
         rmtree(bin_folder)
-        if verbose:
-            print("files have been moved!")
-            sleep(3)
-    except Exception:
-        easygui.msgbox("Couldn't find " + filename, "Script Hook Updater", "OK")
+        print("file " + desktop_s + " has been moved to " + gamedir)
+        sleep(2)
+    except OSError:
+        print(OSError)
         exit()
 
-# Assign variables to for web version and local version and the full path of the downloaded zip file
+# Assign variables to for web version and the full path of the downloaded zip file
 
 
 webver = getwebver()
@@ -172,25 +145,27 @@ shzip = downloads + webver + ".zip"
 # main execution block that will call all the functions to download and extract the zip file
 
 if not path.exists(steam_s):
-    easygui.msgbox("Couldn't locate the scripthook dll file. Getting ready to download it", "Script Hook Updater", "OK")
-    download()
-    extractzip(shzip)
-    easygui.msgbox("ScriptHookV has been downloaded successfully!", "Script Hook Updater")
-    remove(shzip)
-    localver = getlocalver(steam_s)
+    inp = input("\n\nCouldn't locate the scripthook dll file. Would you like to donwload it? [Yy] [Nn]: ")
+    if inp == 'Y' or inp == 'y':
+        download()
+        extractzip(shzip)
+        input("ScriptHookV has been downloaded successfully!")
+        remove(shzip)
+    elif inp == 'N' or inp == 'n':
+        input("Exiting...")
 else:
     localver = getlocalver(steam_s)
     if versiontuple(webver, localver):
-        if easygui.ynbox("Update available! Would you like to update?", "Script Hook Updater", ["Yes", "No"]):
-            if verbose:
-                print("user answered yes")
+        inp = input("\n\nUpdate available! Would you like to update?" "[Yy] [Nn]:")
+        if inp == 'Y' or inp == 'y':
             download()
             extractzip(shzip)
-            easygui.msgbox("ScriptHookV has been updated successfully!", "Script Hook Updater")
+            print("ScriptHookV has been updated successfully!")
             remove(shzip)
-            if verbose:
-                print(shzip + " has been removed")
+            input(shzip + " has been removed")
+        elif inp == 'N' or inp == 'n':
+            input("Exiting...")
     else:
-        easygui.msgbox("No updates at this time", "Script Hook Updater", "OK")
+        input("No updates at this time!")
 
 
