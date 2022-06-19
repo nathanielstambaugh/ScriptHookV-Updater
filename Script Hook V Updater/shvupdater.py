@@ -1,22 +1,22 @@
-from requests import get
-from bs4 import BeautifulSoup
-from win32api import GetFileVersionInfo, LOWORD, HIWORD
 import zipfile
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
-from time import sleep
 from os import remove, path, getlogin
 from shutil import rmtree, move
 from socket import gethostname
+from time import sleep
+import win32api
+from bs4 import BeautifulSoup
+from requests import get
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.options import Options
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
 
 # get the computer hostname
 hostname = gethostname()
 
 # String declarations for the various paths based on computer name
-if hostname == "STRIX" or hostname == "KG-348":
+if hostname == "STRIX" or hostname == "TheBeast":
     print("got hostame " + hostname + "....executing testing code block")
     sleep(2)
     steam_s = r"C:\test\ScriptHookV.dll"
@@ -145,7 +145,7 @@ shzip = downloads + webver + ".zip"
 # main execution block that will call all the functions to download and extract the zip file
 
 if not path.exists(steam_s):
-    inp = input("\n\nCouldn't locate the scripthook dll file. Would you like to donwload it? [Yy] [Nn]: ")
+    inp = input("\n\nCouldn't locate the scripthook dll file. Would you like to download it? [Yy] [Nn]: ")
     if inp == 'Y' or inp == 'y':
         download()
         extractzip(shzip)
