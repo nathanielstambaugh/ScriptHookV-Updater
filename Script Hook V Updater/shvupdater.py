@@ -3,7 +3,7 @@ from os import remove, path, getlogin
 from shutil import rmtree, move
 from socket import gethostname
 from time import sleep
-import win32api
+from win32api import HIWORD, GetFileVersionInfo, LOWORD
 from bs4 import BeautifulSoup
 from requests import get
 from selenium import webdriver
