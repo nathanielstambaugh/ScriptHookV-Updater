@@ -169,6 +169,6 @@ else:
         elif inp == 'N' or inp == 'n':
             input("Exiting...")
     else:
-        input("No updates at this time!")
+        input("\n\nNo updates at this time!")
 
 
