@@ -31,6 +31,7 @@ elif hostname == "DigitalStorm-PC":
     print("got hostname " + hostname + "....executing buzz code block")
     sleep(2)
     steam_s = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V\ScriptHookV.dll"
+    zip_s = "bin/ScriptHookV.dll"
     desktop = r"C:\Users\Admin\Desktop"
     gamedir = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V"
     desktop_s = r"C:\Users\Admin\Desktop\bin\ScriptHookV.dll"
@@ -113,7 +114,7 @@ def download():
         print("Element was clicked....waiting for download to complete")
         sleep(10)
     except:
-        print("Element wasn't clicked....quitting program")
+        input(print("Element wasn't clicked....quitting program"))
         exit()
 
 # Extract the zip file and remove any erroneous files afterwards
@@ -132,8 +133,9 @@ def extractzip(filename):
         rmtree(bin_folder)
         print("file " + desktop_s + " has been moved to " + gamedir)
         sleep(2)
-    except OSError:
-        print(OSError)
+    except OSError as ose:
+        print("An error occurred: " + ose)
+        input("Press any key to exit")
         exit()
 
 # Assign variables to for web version and the full path of the downloaded zip file
@@ -160,9 +162,10 @@ else:
         if inp == 'Y' or inp == 'y':
             download()
             extractzip(shzip)
-            print("ScriptHookV has been updated successfully!")
             remove(shzip)
-            input(shzip + " has been removed")
+            print(shzip + " has been removed")
+            print("ScriptHookV has been updated successfully!")
+            input("\n\nPress any key to exit")
         elif inp == 'N' or inp == 'n':
             input("Exiting...")
     else:
