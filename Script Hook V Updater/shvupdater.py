@@ -16,8 +16,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 hostname = gethostname()
 
 # String declarations for the various paths based on computer name
+
 if hostname == "STRIX" or hostname == "TheBeast":
-    print("got hostame " + hostname + "....executing testing code block")
+    print("got hostame " + hostname)
     sleep(2)
     steam_s = r"C:\test\ScriptHookV.dll"
     zip_s = "bin/ScriptHookV.dll"
@@ -28,7 +29,7 @@ if hostname == "STRIX" or hostname == "TheBeast":
     downloads = r"C:\Users\nstam\Downloads\ScriptHookV_"
     download_dir = r"C:\Users\nstam\Downloads"
 elif hostname == "DigitalStorm-PC":
-    print("got hostname " + hostname + "....executing buzz code block")
+    print("got hostname " + hostname)
     sleep(2)
     steam_s = r"D:\SteamLibrary\steamapps\common\Grand Theft Auto V\ScriptHookV.dll"
     zip_s = "bin/ScriptHookV.dll"
@@ -39,7 +40,7 @@ elif hostname == "DigitalStorm-PC":
     downloads = r"C:\Users\Admin\Downloads\ScriptHookV_"
     download_dir = r"C:\Users\Admin\Downloads"
 else:
-    print("got hostname " + hostname + "....executing public code block")
+    print("got hostname " + hostname)
     sleep(2)
     gamedir = input("\n\nPlease enter the installation directory for GTA 5: ")
     uname = getlogin()
@@ -63,7 +64,6 @@ def getwebver():
 
 # This function will enable downloads in headless mode
 
-
 def enable_download(driver):
     driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
     params = {'cmd':'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
@@ -71,7 +71,6 @@ def enable_download(driver):
 
 
 # The next function retrieves the version of the locally installed ScriptHookV.dll file
-
 
 def getlocalver(filename):
     print("getlocalver() called and was passed " + filename)
